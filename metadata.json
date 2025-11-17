@@ -1,0 +1,8 @@
+{
+  "name": " Pyar",
+  "description": "A clean, modern, and safe random video chat platform that allows strangers to connect instantly with a frictionless, no-login experience and a robust 18+ verification gateway.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
