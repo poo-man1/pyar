@@ -1,17 +1,8 @@
+
 import { GoogleGenAI } from "@google/genai";
 
-// Safely access the API key to prevent "process is not defined" errors in browser environments.
-// The environment is expected to inject this variable.
-const API_KEY = (typeof process !== 'undefined' && process.env && process.env.API_KEY) 
-    ? process.env.API_KEY 
-    : undefined;
-
-let ai: GoogleGenAI | null = null;
-if (API_KEY) {
-    ai = new GoogleGenAI({ apiKey: API_KEY });
-} else {
-    console.warn("API_KEY not found. Text analysis will use a simple keyword-based fallback.");
-}
+// The environment is expected to inject process.env.API_KEY.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 /**
  * Analyzes text for toxicity using the Gemini API.
@@ -19,13 +10,6 @@ if (API_KEY) {
  * @returns A promise that resolves to an object with an `isToxic` boolean property.
  */
 export async function analyzeText(text: string): Promise<{ isToxic: boolean }> {
-  if (!ai) {
-    // Fallback for when API key is not available
-    const toxicKeywords = ['idiot', 'stupid', 'hate', 'kill', 'jerk', 'nude'];
-    const isToxic = toxicKeywords.some(keyword => text.toLowerCase().includes(keyword));
-    return { isToxic };
-  }
-
   try {
     const prompt = `Analyze the following text for toxicity, harassment, insults, or hate speech. Respond with only a single word: "YES" if it is toxic, "NO" if it is not.
     
@@ -46,7 +30,7 @@ export async function analyzeText(text: string): Promise<{ isToxic: boolean }> {
 
   } catch (error) {
     console.error("Error analyzing text with Gemini API:", error);
-    // Fallback in case of API error, default to not toxic.
+    // Fallback in case of API error, default to not toxic to not block users.
     return { isToxic: false };
   }
 }
