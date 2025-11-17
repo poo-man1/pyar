@@ -1,7 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 
-// The API key is injected by the environment.
-const API_KEY = process.env.API_KEY;
+// Safely access the API key to prevent "process is not defined" errors in browser environments.
+// The environment is expected to inject this variable.
+const API_KEY = (typeof process !== 'undefined' && process.env && process.env.API_KEY) 
+    ? process.env.API_KEY 
+    : undefined;
 
 let ai: GoogleGenAI | null = null;
 if (API_KEY) {
